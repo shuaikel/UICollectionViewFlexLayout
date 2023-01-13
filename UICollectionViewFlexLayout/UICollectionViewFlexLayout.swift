@@ -51,7 +51,7 @@ open class UICollectionViewFlexLayout: UICollectionViewFlowLayout {
             var maxItemBottom: CGFloat = 0
             
             offset.x = sectionMargin.left + sectionPadding.left // start from left
-            offset.y = sectionVerticalSpacing + sectionMargin.top + sectionPadding.top // accumulated
+            offset.y = sectionMargin.top + sectionPadding.top // accumulated
             
             // header
             if let sectionHeaderAttribute = self.prepareSectionHeaderAttributes(section) {
@@ -138,8 +138,15 @@ open class UICollectionViewFlexLayout: UICollectionViewFlowLayout {
         var sectionLayoutY: CGFloat = 0
         if section > 0 {
             let preSectionAttribute:UICollectionViewLayoutAttributes = self.maxYSectionAttribute[section - 1]!
-            sectionLayoutY = preSectionAttribute.frame.maxY + sectionMargin.top + sectionPadding.top
+            sectionLayoutY = preSectionAttribute.frame.maxY + sectionMargin.top
         }
+        
+        var sectionVerticalSpacing: CGFloat = 0
+        if section > 0 {
+            sectionVerticalSpacing = self.verticalSpacing(betweenSectionAt: section - 1, and: section)
+        }
+        sectionLayoutY += sectionVerticalSpacing
+        
         sectionHeaderAttribute.frame = CGRect(
             x: sectionPadding.left,
             y: sectionLayoutY,
@@ -159,7 +166,7 @@ open class UICollectionViewFlexLayout: UICollectionViewFlowLayout {
         let sectionFooterSize = self.collectionView(collectionView, frameForHeader: false, inSection: section)
         let sectionFooterAttribute = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
                                                                       with: sectionIndexPath)
-        let sectionFooterLayoutY: CGFloat = self.maxYSectionAttribute[section]?.frame.maxY ?? 0
+        let sectionFooterLayoutY: CGFloat = self.maxYSectionAttribute[section]?.frame.maxY  ?? 0
         sectionFooterAttribute.frame = CGRect(
             x: sectionPadding.left,
             y: sectionFooterLayoutY,
